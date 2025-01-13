@@ -8,9 +8,11 @@ import { TextContent } from "./TextContext";
 export const LeftBubble = ({
   message,
   isChat,
+  isHindi
 }: {
   message: Message;
   isChat: boolean;
+  isHindi : boolean
 }) => {
   return (
     <>
@@ -29,14 +31,14 @@ export const LeftBubble = ({
               </div>
             </div>
           </div>
-          <div className="md:px-1 pb-3 flex gap-2 self-start md:self-center">
+         {!isHindi &&  <div className="md:px-1 pb-3 flex gap-2 self-start md:self-center">
             {!isChat && (
               <div className="h-6 w-6 shrink-0">
                 <MessageAudio message={message} />
               </div>
             )}
             <MessageMeta className="md:hidden" message={message} />
-          </div>
+          </div>}
         </div>
       </div>
       <div className="hidden col-start-1 col-end-13 md:px-3 pb-3 md:flex gap-2">

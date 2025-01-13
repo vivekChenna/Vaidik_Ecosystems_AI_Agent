@@ -20,12 +20,14 @@ export const Controls = ({
   handleInputChange,
   messages,
   isChat,
+  isHindi
 }: {
   input: string;
   handleSubmit: any;
   handleInputChange: any;
   messages: Message[];
   isChat: boolean;
+  isHindi : boolean
 }) => {
   const { startMicrophone, stopMicrophone, microphoneOpen } = useMicrophone();
   const { formRef, onKeyDown } = useSubmit();
@@ -67,7 +69,7 @@ export const Controls = ({
     <form onSubmit={submitter} ref={formRef}>
       <div className="relative">
         <div className="absolute w-full -top-[4.5rem] py-4 flex justify-between">
-          { !isChat &&  <Settings />}
+          { !isHindi &&  <Settings />}
           <Download messages={messages} />
         </div>
         <div className="flex bg-[#101014] rounded-full">

@@ -1,8 +1,10 @@
+"use client";
+
 import { Headphones } from "./Headphones";
 import { isBrowser } from "react-device-detect";
 import { Spinner } from "@nextui-org/react";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useHindi } from "../context/HindiContext";
 
 export const InitialLoad = ({
   fn,
@@ -13,7 +15,11 @@ export const InitialLoad = ({
   connecting: boolean;
   setIsChat: () => void;
 }) => {
-  const router = useRouter();
+  
+const{setIsHindi , isHindi} = useHindi();
+
+// console.log('ishindi' , isHindi);
+
 
   return (
     <>
@@ -59,7 +65,28 @@ export const InitialLoad = ({
                         height={15}
                         width={15}
                       />
-                      <>Start</>
+                      <>English</>
+                    </button>
+                    <button
+                      disabled={connecting}
+                      type="button"
+                      className=" flex items-center gap-1.5 px-6 md:px-8 py-3  bg-white rounded-md border"
+                      onClick={() => {
+                        // console.log('Previous Hindi state:', isHindi);
+                        setIsHindi(true);
+                        // console.log('Setting Hindi state to true');
+                        if (!connecting) {
+                          fn();
+                        }
+                      }}
+                    >
+                      <Image
+                        src="/phone-call.svg"
+                        alt="call"
+                        height={15}
+                        width={15}
+                      />
+                      <>Hindi</>
                     </button>
                     {/* <button
                       className=" flex items-center gap-1.5 px-6 md:px-8 py-3  bg-white rounded-md border"

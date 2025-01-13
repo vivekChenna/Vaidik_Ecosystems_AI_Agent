@@ -15,6 +15,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import "./globals.css";
 
 import type { Metadata, Viewport } from "next";
+import { HindiProvider } from "./context/HindiContext";
 
 const inter = Inter({ subsets: ["latin"] });
 const favorit = localFont({
@@ -52,6 +53,7 @@ export default function RootLayout({
           inter.className
         )}`}
       >
+        <HindiProvider>
         <ToastContextProvider>
           <MicrophoneContextProvider>
             <AudioStoreContextProvider>
@@ -63,6 +65,7 @@ export default function RootLayout({
             </AudioStoreContextProvider>
           </MicrophoneContextProvider>
         </ToastContextProvider>
+        </HindiProvider>
         <GoogleTagManager gtmId="GTM-5R73N627" />
         <Script
           id="github-buttons"

@@ -1,7 +1,7 @@
 import { LiveTranscriptionEvent } from "@deepgram/sdk";
 import { Message } from "ai/react";
 import moment from "moment";
-import { greetings } from "./constants";
+import { greetings, hindiGreetings } from "./constants";
 
 /**
  * get the sentence from a LiveTranscriptionEvent
@@ -51,13 +51,15 @@ function randomArrayValue(array: any[]): any {
   const key = Math.floor(Math.random() * array.length);
 
   return array[key];
-};
+}
 
-function contextualGreeting(): string {
-  const greeting = randomArrayValue(greetings);
+function contextualGreeting(isHindi: boolean): string {
+  // console.log('ishindi greet' , isHindi);
+  
+  const greeting = randomArrayValue(isHindi ? hindiGreetings : greetings);
 
   return sprintf(greeting.text, ...greeting.strings);
-};
+}
 
 /**
  * @returns {string}
@@ -76,26 +78,44 @@ function contextualHello(): string {
   } else {
     return "Hello";
   }
-};
+}
+
+function ContextualHindiHello():string{
+  const hour = moment().hour();
+  if (hour > 3 && hour <= 12) {
+    return "सुप्रभात"; // Good morning
+  } else if (hour > 12 && hour <= 15) {
+    return "शुभ दोपहर"; // Good afternoon
+  } else if (hour > 15 && hour <= 20) {
+    return "शुभ संध्या"; // Good evening
+  } else if (hour > 20 || hour <= 3) {
+    return "आप देर रात तक जाग रहे हैं"; // You're up late
+  } else {
+    return "नमस्ते"; // Hello
+  }
+}
 
 /**
  * Generate random string of alphanumerical characters.
- * 
+ *
  * @param {number} length this is the length of the string to return
  * @returns {string}
  */
 function generateRandomString(length: number): string {
-  let characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
+  let characters =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  let result = "";
 
   for (let i = 0; i < length; i++) {
-    let randomChar = characters.charAt(Math.floor(Math.random() * characters.length));
+    let randomChar = characters.charAt(
+      Math.floor(Math.random() * characters.length)
+    );
     result += randomChar;
   }
 
   return result;
 
-  return 'test';
+  return "test";
 }
 
 export {
@@ -104,5 +124,6 @@ export {
   contextualHello,
   getUserMessages,
   getConversationMessages,
-  utteranceText
+  utteranceText,
+  ContextualHindiHello
 };

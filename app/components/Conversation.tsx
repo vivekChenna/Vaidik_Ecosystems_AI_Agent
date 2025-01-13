@@ -23,11 +23,12 @@ import { Controls } from "./Controls";
 import { InitialLoad } from "./InitialLoad";
 import { MessageMetadata } from "../lib/types";
 import { RightBubble } from "./RightBubble";
-import { systemContent } from "../lib/constants";
+import { HindiSystemContent, systemContent } from "../lib/constants";
 import { useDeepgram } from "../context/Deepgram";
 import { useMessageData } from "../context/MessageMetadata";
 import { useMicrophone } from "../context/Microphone";
 import { useAudioStore } from "../context/AudioStore";
+import { useHindi } from "../context/HindiContext";
 
 /**
  * Conversation element that contains the conversational AI app.
@@ -70,13 +71,22 @@ export default function Conversation(): JSX.Element {
   const [initialLoad, setInitialLoad] = useState(true);
   const [isProcessing, setProcessing] = useState(false);
   const [isChat, setIsChat] = useState(false);
+  const [flag, setFlag] = useState(false);
+
+  const { isHindi } = useHindi();
+
+  // console.log("ishindi", isHindi);
+
+  // useEffect(()=>{
+
+  // },[isHindi]);
 
   /**
    * Request audio from API
    */
   const requestTtsAudio = useCallback(
     async (message: Message) => {
-      if (isChat) {
+      if (isHindi) {
         return;
       }
       const start = Date.now();
@@ -103,7 +113,7 @@ export default function Conversation(): JSX.Element {
       });
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [ttsOptions?.model , isChat]
+    [ttsOptions?.model, isChat, isHindi]
   );
 
   const [llmNewLatency, setLlmNewLatency] = useState<{
@@ -131,18 +141,18 @@ export default function Conversation(): JSX.Element {
     () => ({
       id: generateRandomString(7),
       role: "system",
-      content: systemContent,
+      content: isHindi ? HindiSystemContent : systemContent,
     }),
-    []
+    [isHindi]
   );
 
   const greetingMessage: Message = useMemo(
     () => ({
       id: generateRandomString(7),
       role: "assistant",
-      content: contextualGreeting(),
+      content: contextualGreeting(isHindi),
     }),
-    []
+    [isHindi]
   );
 
   /**
@@ -246,17 +256,22 @@ export default function Conversation(): JSX.Element {
     ttsOptions?.model,
   ]);
 
+  useEffect(() => {
+
+    if(!isHindi){
+      requestTtsAudio(greetingMessage);
+    }
+  }, []);
+
   /**
    * Contextual functions
    */
-  const requestWelcomeAudio = useCallback(async () => {
-
-    if (isChat) {
-      return;
-    } else {
-      requestTtsAudio(greetingMessage);
-    }
-  }, [greetingMessage, requestTtsAudio, isChat]);
+  // const requestWelcomeAudio = useCallback(async () => {
+  //   if (isHindi === true) return; // Explicitly check for boolean true
+  //   if (isHindi === false) {
+  //     requestTtsAudio(greetingMessage);
+  //   }
+  // }, [isHindi, greetingMessage, requestTtsAudio]);
 
   const startConversation = useCallback(() => {
     if (!initialLoad) return;
@@ -272,13 +287,16 @@ export default function Conversation(): JSX.Element {
     addMessageData(welcomeMetadata);
 
     // get welcome audio
-    requestWelcomeAudio();
+    // if (!isHindi) {
+    //   requestWelcomeAudio();
+    // }
   }, [
     addMessageData,
     greetingMessage,
     initialLoad,
-    requestWelcomeAudio,
+    // requestWelcomeAudio,
     ttsOptions?.model,
+    isHindi,
   ]);
 
   useEffect(() => {
@@ -470,11 +488,19 @@ export default function Conversation(): JSX.Element {
                       <>
                         {chatMessages.length > 0 &&
                           chatMessages.map((message, i) => (
-                            <ChatBubble message={message} key={i} isChat={isChat} />
+                            <ChatBubble
+                              message={message}
+                              key={i}
+                              isChat={isChat}
+                              isHindi={isHindi}
+                            />
                           ))}
 
                         {currentUtterance && (
-                          <RightBubble text={currentUtterance}></RightBubble>
+                          <RightBubble
+                            isHindi={isHindi}
+                            text={currentUtterance}
+                          ></RightBubble>
                         )}
 
                         <div
@@ -492,6 +518,7 @@ export default function Conversation(): JSX.Element {
                     handleInputChange={handleInputChange}
                     input={input}
                     isChat={isChat}
+                    isHindi={isHindi}
                   />
                 )}
               </div>

@@ -15,6 +15,8 @@ export async function POST(req: Request) {
   const { messages } = await req.json();
   const start = Date.now();
 
+  console.log('messages',messages);
+
   // Request the OpenAI API for the response based on the prompt
   try {
     const response = await openai.chat.completions.create({

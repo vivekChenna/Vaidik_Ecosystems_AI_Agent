@@ -14,13 +14,13 @@ function isAssistantMessage(message: any): message is Message {
   return message.role === "assistant";
 }
 
-export const ChatBubble = ({ message ,  isChat}: { message: any , isChat: boolean;}) => {
+export const ChatBubble = ({ message ,  isChat , isHindi}: { message: any , isChat: boolean;  isHindi : boolean}) => {
   if (isUserMessage(message)) {
     // chat user
-    return <RightBubble message={message} />;
+    return <RightBubble message={message} isHindi={isHindi} />;
   } else if (isAssistantMessage(message)) {
     // chat assistant
-    return <LeftBubble message={message} isChat={isChat} />;
+    return <LeftBubble message={message} isChat={isChat} isHindi={isHindi} />;
   } else {
     // other as-yet unlabelled messages
     return <></>;

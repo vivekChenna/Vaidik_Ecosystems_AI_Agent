@@ -6,9 +6,11 @@ import { UserAvatar } from "./UserAvatar";
 export const RightBubble = ({
   message,
   text,
+  isHindi
 }: {
   message?: Message;
   text?: string;
+  isHindi? : boolean
 }) => {
   return (
     <>

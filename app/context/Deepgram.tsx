@@ -18,6 +18,7 @@ import {
 } from "react";
 import { useToast } from "./Toast";
 import { useLocalStorage } from "../lib/hooks/useLocalStorage";
+import { useHindi } from "./HindiContext";
 
 type DeepgramContext = {
   ttsOptions: SpeakSchema | undefined;
@@ -41,13 +42,17 @@ const defaultTtsOptions = {
   model: DEFAULT_TTS_MODEL,
 };
 
-const defaultSttsOptions = {
-  model: DEFAULT_STT_MODEL,
-  interim_results: true,
-  smart_format: true,
-  endpointing: 550,
-  utterance_end_ms: 1500,
-  filler_words: true,
+const getDefaultSttOptions = (isHindi: boolean) => {
+  // console.log("getting value of isHindi", isHindi);
+  return {
+    model: DEFAULT_STT_MODEL,
+    interim_results: true,
+    smart_format: true,
+    endpointing: 550,
+    utterance_end_ms: 1500,
+    filler_words: true,
+    ...(isHindi && { language: "hi" }), // Add language property only if isHindi is true
+  };
 };
 
 /**
@@ -62,7 +67,7 @@ const voices: {
   };
 } = {
   [DEFAULT_TTS_MODEL]: {
-    name: "Vaidik Female",
+    name: "Vaidik",
     avatar: "/vaidikecosystems.png",
     language: "English",
     accent: "US",
@@ -92,7 +97,7 @@ const voices: {
   //   accent: "US",
   // },
   "aura-orion-en": {
-    name: "Vaidik Male",
+    name: "Vaidik",
     avatar: "/vaidikecosystems.png",
     language: "English",
     accent: "US",
@@ -149,6 +154,8 @@ const getApiKey = async (): Promise<string> => {
 
 const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
   const { toast } = useToast();
+  const { isHindi } = useHindi();
+
   const [ttsOptions, setTtsOptions] = useLocalStorage<SpeakSchema | undefined>(
     "ttsModel"
   );
@@ -158,6 +165,7 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
   const [connection, setConnection] = useState<LiveClient>();
   const [connecting, setConnecting] = useState<boolean>(false);
   const [connectionReady, setConnectionReady] = useState<boolean>(false);
+  const defaultSttOptions = getDefaultSttOptions(isHindi);
 
   const connect = useCallback(
     async (defaultSttsOptions: SpeakSchema) => {
@@ -175,8 +183,25 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    [connecting, connection]
+    [connecting, connection ]
   );
+
+  useEffect(() => {
+    // Get updated options based on isHindi
+    const updatedSttOptions = getDefaultSttOptions(isHindi);
+  
+    // Update sttOptions only if they are different from the current value
+    if (JSON.stringify(sttOptions) !== JSON.stringify(updatedSttOptions)) {
+      setSttOptions(updatedSttOptions);
+  
+      // Reset and reconnect Deepgram only if necessary
+      if (connection) {
+        connection.removeAllListeners(); // Cleanup previous listeners
+        setConnection(undefined); // Disconnect current connection
+      }
+      connect(updatedSttOptions); // Reconnect with new options
+    }
+  }, [isHindi, sttOptions, connect, connection, setSttOptions]);
 
   useEffect(() => {
     // it must be the first open of the page, let's set up the defaults
@@ -196,10 +221,10 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
     }
 
     if (!sttOptions === undefined) {
-      setSttOptions(defaultSttsOptions);
+      setSttOptions(defaultSttOptions);
     }
     if (connection === undefined) {
-      connect(defaultSttsOptions);
+      connect(defaultSttOptions);
     }
   }, [
     connect,
@@ -208,7 +233,10 @@ const DeepgramContextProvider = ({ children }: DeepgramContextInterface) => {
     setTtsOptions,
     sttOptions,
     ttsOptions,
+    
   ]);
+
+  
 
   useEffect(() => {
     if (connection && connection?.getReadyState() !== undefined) {
