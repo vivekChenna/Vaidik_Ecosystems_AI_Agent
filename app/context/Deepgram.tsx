@@ -68,7 +68,7 @@ const voices: {
 } = {
   [DEFAULT_TTS_MODEL]: {
     name: "Vaidik",
-    avatar: "/vaidikecosystems.png",
+    avatar: "https://s3.ap-south-1.amazonaws.com/andai-typebot-upload-bucket/public/workspaces/cm14w720s0008fqejq8982lqn/typebots/cm427nrax000r67atb4k66k0f/hostAvatar?v=1732854789928",
     language: "English",
     accent: "US",
   },
@@ -98,7 +98,7 @@ const voices: {
   // },
   "aura-orion-en": {
     name: "Vaidik",
-    avatar: "/vaidikecosystems.png",
+    avatar: "https://s3.ap-south-1.amazonaws.com/andai-typebot-upload-bucket/public/workspaces/cm14w720s0008fqejq8982lqn/typebots/cm427nrax000r67atb4k66k0f/hostAvatar?v=1732854789928",
     language: "English",
     accent: "US",
   },
